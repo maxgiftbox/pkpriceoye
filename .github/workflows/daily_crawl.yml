@@ -1,12 +1,27 @@
 name: Daily Price Crawl
 
 on:
+  schedule:
+    - cron: "0 6 * * *"
   workflow_dispatch:
 
 jobs:
-  test:
+  crawl:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Test workflow
-        run: echo "GitHub Actions is working"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run scraper
+        run: python scraper.py
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
